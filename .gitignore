@@ -1,0 +1,23 @@
+# Конфиденциальные файлы проекта
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.log
+
+# Инструкции и заметки проекта
+PROJECT_INSTRUCTIONS.md
+*.local.md
+
+# Временные загрузки и кэш
+.DS_Store
+uploads/
+processed/
+temp/
+tmp/
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/

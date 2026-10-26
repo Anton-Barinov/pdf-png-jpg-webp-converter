@@ -1,0 +1,15 @@
+services:
+  converter:
+    build: .
+    container_name: pdf-png-jpg-webp-converter
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    environment:
+      - APP_NAME=Universal Converter
+      - TTL_SECONDS=300
+      - MAX_FILE_SIZE_MB=100
+      - MAX_SESSION_FILES=50
+    # Optional persistent volume for sessions cache if needed
+    # volumes:
+    #   - ./sessions:/var/www/private/storage/sessions
