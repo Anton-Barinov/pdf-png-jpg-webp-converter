@@ -18,7 +18,7 @@ header("Permissions-Policy: geolocation=(), camera=(), microphone=()");
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title><?= $appName ?> &mdash; <?= $appHost ?></title>
   <meta name="description" content="Приватный автономный конвертер и оптимизатор изображений и PDF. Локальная обработка без внешних API, автоудаление через 5 минут.">
-  <link rel="stylesheet" href="assets/style.css?v=10">
+  <link rel="stylesheet" href="assets/style.css?v=11">
 </head>
 <body>
   <header>
@@ -253,6 +253,6 @@ header("Permissions-Policy: geolocation=(), camera=(), microphone=()");
   <!-- Notification Toast -->
   <div id="statusToast" class="status-toast"></div>
 
-  <script src="assets/app.js?v=10"></script>
+  <script src="assets/app.js?v=11"></script>
 </body>
 </html>

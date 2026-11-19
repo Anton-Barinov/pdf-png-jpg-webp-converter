@@ -1012,7 +1012,7 @@
           </div>
         </div>
         <div style="flex-shrink: 0;">
-          <a href="${item.download_url}" class="btn btn-primary btn-sm" download>
+          <a href="${item.download_url}" class="btn btn-primary btn-sm" download="${escapeHtml(item.name)}">
             ${ICONS.download}
             <span>Скачать</span>
           </a>
@@ -1025,6 +1025,7 @@
     if (zipAllUrl && results.length > 1) {
       btnDownloadAll.style.display = 'inline-flex';
       btnDownloadAll.href = zipAllUrl;
+      btnDownloadAll.setAttribute('download', 'all_converted_files.zip');
     } else {
       btnDownloadAll.style.display = 'none';
     }

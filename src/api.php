@@ -20,14 +20,16 @@ if (!is_dir($baseStorageDir)) {
 // Background auto-purge expired sessions on each API invocation
 Cleanup::purgeExpired($baseStorageDir, (int)$config['ttl_seconds']);
 
+$action = $_GET['action'] ?? $_POST['action'] ?? '';
+
 // Security headers
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('Referrer-Policy: no-referrer');
 header('Permissions-Policy: geolocation=(), camera=(), microphone=()');
-header('Content-Type: application/json; charset=utf-8');
-
-$action = $_GET['action'] ?? $_POST['action'] ?? '';
+if ($action !== 'download') {
+    header('Content-Type: application/json; charset=utf-8');
+}
 
 try {
     switch ($action) {
@@ -612,30 +614,46 @@ function handleDownload(string $baseStorageDir): void
     $sessionId = $_GET['session_id'] ?? '';
     $fileName  = $_GET['file'] ?? '';
 
-    // Enforce strict alphanumeric + safe punctuation for session and file name
-    if (!preg_match('/^[a-f0-9]{32}$/', $sessionId) || !preg_match('/^[a-zA-Z0-9_\-\.]+$/', $fileName)) {
+    // Enforce strict 32 hex chars for session ID
+    if (!preg_match('/^[a-f0-9]{32}$/', $sessionId)) {
         http_response_code(400);
-        exit('Некорректный запрос');
+        header('Content-Type: text/plain; charset=utf-8');
+        exit('Некорректный идентификатор сессии');
     }
 
-    // Prevent directory traversal using basename and strict realpath matching
+    // Sanitize filename: prevent path traversal (no slashes, null bytes, double dots)
+    if ($fileName === '' || str_contains($fileName, '/') || str_contains($fileName, '\\') || str_contains($fileName, "\0") || str_contains($fileName, '..')) {
+        http_response_code(400);
+        header('Content-Type: text/plain; charset=utf-8');
+        exit('Некорректное имя файла');
+    }
+
     $safeFile = basename($fileName);
     $outputDir = realpath($baseStorageDir . '/' . $sessionId . '/output');
     if (!$outputDir || !is_dir($outputDir)) {
         http_response_code(404);
+        header('Content-Type: text/plain; charset=utf-8');
         exit('Сессия не найдена или срок хранения (5 минут) истек');
     }
 
     $filePath = realpath($outputDir . '/' . $safeFile);
     if (!$filePath || !file_exists($filePath) || !str_starts_with($filePath, $outputDir . DIRECTORY_SEPARATOR)) {
         http_response_code(404);
+        header('Content-Type: text/plain; charset=utf-8');
         exit('Файл не найден или срок его хранения (5 минут) истек');
     }
 
+    if (ob_get_level()) {
+        ob_end_clean();
+    }
+
     $mime = Converter::detectMime($filePath) ?: 'application/octet-stream';
+    $asciiFallback = preg_replace('/[^\x20-\x7E]/', '_', $safeFile);
+    $encodedFilename = rawurlencode($safeFile);
+
     header('Content-Description: File Transfer');
     header('Content-Type: ' . $mime);
-    header('Content-Disposition: attachment; filename="' . addslashes($safeFile) . '"');
+    header("Content-Disposition: attachment; filename=\"$asciiFallback\"; filename*=UTF-8''$encodedFilename");
     header('Content-Transfer-Encoding: binary');
     header('Expires: 0');
     header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
