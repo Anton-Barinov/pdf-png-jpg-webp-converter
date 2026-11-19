@@ -18,7 +18,7 @@ header("Permissions-Policy: geolocation=(), camera=(), microphone=()");
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title><?= $appName ?> &mdash; <?= $appHost ?></title>
   <meta name="description" content="Приватный автономный конвертер и оптимизатор изображений и PDF. Локальная обработка без внешних API, автоудаление через 5 минут.">
-  <link rel="stylesheet" href="assets/style.css?v=9">
+  <link rel="stylesheet" href="assets/style.css?v=10">
 </head>
 <body>
   <header>
@@ -108,7 +108,7 @@ header("Permissions-Policy: geolocation=(), camera=(), microphone=()");
 
         <!-- 1. EMPTY STATE VIEW (Shown when 0 files uploaded) -->
         <div id="emptyStateView">
-          <div id="dropzone" class="dropzone" onclick="document.getElementById('fileInput').click()">
+          <div id="dropzone" class="dropzone">
             <div class="dropzone-icon-box">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -118,7 +118,7 @@ header("Permissions-Policy: geolocation=(), camera=(), microphone=()");
             </div>
             <div id="dropzoneTitle" class="dropzone-title">Перетащите сюда файлы (можно сразу группой)</div>
             <div id="dropzoneSub" class="dropzone-sub">Поддерживаются PNG, JPG, WebP, PDF &bull; до 2 GB &bull; без ограничений</div>
-            <button type="button" class="btn btn-secondary btn-sm dropzone-btn" onclick="document.getElementById('fileInput').click()">
+            <button type="button" class="btn btn-secondary btn-sm dropzone-btn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 5v14M5 12h14"></path>
               </svg>
@@ -188,7 +188,7 @@ header("Permissions-Policy: geolocation=(), camera=(), microphone=()");
           <div class="files-table" id="fileList"></div>
 
           <!-- Compact Add More Files Strip -->
-          <div class="add-more-strip" id="addMoreStrip" onclick="document.getElementById('fileInput').click()">
+          <div class="add-more-strip" id="addMoreStrip">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 5v14M5 12h14"></path>
             </svg>
@@ -253,6 +253,6 @@ header("Permissions-Policy: geolocation=(), camera=(), microphone=()");
   <!-- Notification Toast -->
   <div id="statusToast" class="status-toast"></div>
 
-  <script src="assets/app.js?v=9"></script>
+  <script src="assets/app.js?v=10"></script>
 </body>
 </html>

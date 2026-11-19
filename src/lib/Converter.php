@@ -165,19 +165,47 @@ class Converter
             escapeshellarg($srcPdf)
         );
 
-        if (self::execCheck($cmd) && file_exists($dstPdf) && filesize($dstPdf) > 0) {
-            // Check if the compressed version is actually smaller
-            if (filesize($dstPdf) >= filesize($srcPdf)) {
-                // If ghostscript did not make it smaller, try linearizing with qpdf
+        $gsSuccess = self::execCheck($cmd) && file_exists($dstPdf) && filesize($dstPdf) > 0;
+
+        if ($gsSuccess) {
+            $origSize = filesize($srcPdf);
+            $newSize = filesize($dstPdf);
+
+            // If ghostscript made it larger or equal, try linearizing with qpdf
+            if ($newSize >= $origSize) {
+                $qpdfDst = $dstPdf . '.qpdf.tmp';
                 $qpdfCmd = sprintf('%s --linearize %s %s 2>&1',
-                    self::BIN_QPDF, escapeshellarg($srcPdf), escapeshellarg($dstPdf));
-                @unlink($dstPdf);
-                self::execCheck($qpdfCmd);
+                    self::BIN_QPDF, escapeshellarg($srcPdf), escapeshellarg($qpdfDst));
+
+                if (self::execCheck($qpdfCmd) && file_exists($qpdfDst) && filesize($qpdfDst) > 0) {
+                    if (filesize($qpdfDst) < $newSize) {
+                        @rename($qpdfDst, $dstPdf);
+                    } else {
+                        @unlink($qpdfDst);
+                    }
+                } else {
+                    @unlink($qpdfDst);
+                }
+
+                // If output is still larger than original, preserve original
+                if (file_exists($dstPdf) && filesize($dstPdf) > $origSize) {
+                    @copy($srcPdf, $dstPdf);
+                }
             }
+
+            return file_exists($dstPdf) && filesize($dstPdf) > 0;
+        }
+
+        // If Ghostscript failed, try qpdf linearize directly
+        $qpdfCmd = sprintf('%s --linearize %s %s 2>&1',
+            self::BIN_QPDF, escapeshellarg($srcPdf), escapeshellarg($dstPdf));
+        if (self::execCheck($qpdfCmd) && file_exists($dstPdf) && filesize($dstPdf) > 0) {
             return true;
         }
 
-        return false;
+        // Final fallback: copy original so user never gets broken or empty output
+        @copy($srcPdf, $dstPdf);
+        return file_exists($dstPdf) && filesize($dstPdf) > 0;
     }
 
     /**

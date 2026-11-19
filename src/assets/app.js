@@ -152,6 +152,17 @@
       }
     });
 
+    // Click on dropzone and add-more strip
+    dropzone.addEventListener('click', (e) => {
+      e.preventDefault();
+      fileInput.click();
+    });
+
+    addMoreStrip.addEventListener('click', (e) => {
+      e.preventDefault();
+      fileInput.click();
+    });
+
     // File input change
     fileInput.addEventListener('change', () => {
       if (fileInput.files && fileInput.files.length > 0) {
@@ -164,11 +175,22 @@
     setupDragDrop(dropzone);
     setupDragDrop(addMoreStrip);
 
-    // Global dragover indicator on window
-    ['dragenter', 'dragover'].forEach(name => {
+    // Prevent browser default behavior (opening file in tab) when dropped anywhere on window
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(name => {
       window.addEventListener(name, (e) => {
         e.preventDefault();
       }, false);
+      document.body.addEventListener(name, (e) => {
+        e.preventDefault();
+      }, false);
+    });
+
+    window.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const dt = e.dataTransfer;
+      if (dt && dt.files && dt.files.length > 0) {
+        handleFiles(dt.files);
+      }
     });
 
     // Global Format Select Change Listener
@@ -375,8 +397,11 @@
       return 'webp';
     }
     if (file.category === 'pdf') {
-      if (['optimize_pdf', 'split_pdf', 'pdf_to_images', 'pdf_png', 'pdf_jpg'].includes(desiredGlobal)) {
-        return desiredGlobal === 'optimize_pdf' ? 'pdf_opt' : (desiredGlobal === 'pdf_to_images' ? 'pdf_png' : desiredGlobal);
+      if (['optimize_pdf', 'split_pdf', 'pdf_to_images', 'pdf_opt', 'pdf_split', 'pdf_png', 'pdf_jpg'].includes(desiredGlobal)) {
+        if (desiredGlobal === 'optimize_pdf') return 'pdf_opt';
+        if (desiredGlobal === 'split_pdf') return 'pdf_split';
+        if (desiredGlobal === 'pdf_to_images') return 'pdf_png';
+        return desiredGlobal;
       }
       return 'pdf_opt';
     }

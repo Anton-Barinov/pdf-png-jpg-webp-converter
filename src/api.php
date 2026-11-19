@@ -274,7 +274,7 @@ function handleConvert(string $baseStorageDir): void
                     }
                 }
             } elseif ($fInfo['category'] === 'pdf') {
-                if ($tgtFmt === 'pdf_opt' || $tgtFmt === 'optimize') {
+                if ($tgtFmt === 'pdf_opt' || $tgtFmt === 'optimize_pdf' || $tgtFmt === 'optimize') {
                     $outName = $baseName . '_optimized.pdf';
                     if (isset($usedNames[$outName])) $outName = $baseName . '_' . $fId . '_opt.pdf';
                     $usedNames[$outName] = true;
@@ -293,7 +293,7 @@ function handleConvert(string $baseStorageDir): void
                             'type' => 'application/pdf',
                         ];
                     }
-                } elseif ($tgtFmt === 'pdf_split') {
+                } elseif ($tgtFmt === 'pdf_split' || $tgtFmt === 'split_pdf') {
                     $splitSubDir = $outputDir . '/split_' . $fId;
                     @mkdir($splitSubDir, 0750, true);
                     $pages = Converter::splitPdf($srcPath, $splitSubDir);
@@ -314,8 +314,8 @@ function handleConvert(string $baseStorageDir): void
                             'type' => 'application/zip',
                         ];
                     }
-                } elseif ($tgtFmt === 'pdf_png' || $tgtFmt === 'pdf_jpg') {
-                    $imgFormat = $tgtFmt === 'pdf_jpg' ? 'jpg' : 'png';
+                } elseif ($tgtFmt === 'pdf_png' || $tgtFmt === 'pdf_jpg' || $tgtFmt === 'pdf_to_images' || $tgtFmt === 'png' || $tgtFmt === 'jpg' || $tgtFmt === 'jpeg') {
+                    $imgFormat = ($tgtFmt === 'pdf_jpg' || $tgtFmt === 'jpg' || $tgtFmt === 'jpeg') ? 'jpg' : 'png';
                     $pdfImgDir = $outputDir . '/pdf_img_' . $fId;
                     @mkdir($pdfImgDir, 0750, true);
                     $imgFiles = Converter::pdfToImages($srcPath, $pdfImgDir, $imgFormat, 150);

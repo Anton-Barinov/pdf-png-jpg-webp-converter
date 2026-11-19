@@ -270,6 +270,10 @@ main {
   background: var(--primary-light);
 }
 
+.dropzone * {
+  pointer-events: none;
+}
+
 .dropzone-icon-box {
   width: 48px;
   height: 48px;
@@ -760,6 +764,10 @@ main {
   background: var(--primary-light);
   border-color: var(--primary);
   color: var(--primary);
+}
+
+.add-more-strip * {
+  pointer-events: none;
 }
 
 .add-more-strip svg {
