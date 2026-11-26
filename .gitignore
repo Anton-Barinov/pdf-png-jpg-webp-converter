@@ -12,6 +12,8 @@ PROJECT_INSTRUCTIONS.md
 
 # Временные загрузки и кэш
 .DS_Store
+backup/
+*.tar
 uploads/
 processed/
 temp/
